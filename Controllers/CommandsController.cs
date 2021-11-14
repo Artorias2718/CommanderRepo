@@ -29,13 +29,27 @@ namespace Commander.Controllers
         }
 
         // GET api/commands/{id}
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name="GetCommandById")]
         public ActionResult<CommandRead> GetCommandById(int id)
         {
             var oCommandItem = m_oRepository.GetCommandById(id);
             return oCommandItem != null
             ? Ok(m_oMapper.Map<CommandRead>(oCommandItem))
             : NotFound();
+        }
+
+        // POST api/commands
+        [HttpPost]
+        public ActionResult<CommandRead> CreateCommand(CommandCreate i_oCommandCreate)
+        {
+            var oCommandModel = m_oMapper.Map<Command>(i_oCommandCreate);
+            m_oRepository.CreateCommand(oCommandModel);
+            m_oRepository.SaveChanges();
+
+            var oCommandRead = m_oMapper.Map<CommandRead>(oCommandModel);
+
+            return CreatedAtRoute(nameof(GetCommandById), new { Id = oCommandRead.Id }, oCommandRead);
+            //return Ok(oCommandRead);
         }
     }
 }
