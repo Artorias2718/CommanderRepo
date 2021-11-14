@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Commander.Data;
 using Commander.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Commander.DTO;
 
 namespace Commander.Controllers
@@ -52,7 +53,7 @@ namespace Commander.Controllers
             //return Ok(oCommandRead);
         }
 
-        // PUT api/commands/{id}
+        // PUT api/commands/{i_oId}
         [HttpPut("{i_oId}")]
         public ActionResult UpdateCommand(int i_oId, CommandUpdate i_oCommandUpdate)
         {
@@ -73,6 +74,31 @@ namespace Commander.Controllers
             m_oRepository.SaveChanges();
 
             return NoContent();
+        }
+
+        // PATCH api/commands/{i_oId}
+        [HttpPatch("{i_oId}")]
+        public ActionResult PartialCommandUpdate(int i_oId, JsonPatchDocument<CommandUpdate> i_oPatchDoc)
+        {
+            var oCommandModelFromRepo = m_oRepository.GetCommandById(i_oId);
+            if(oCommandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            var oCommandToPatch = m_oMapper.Map<CommandUpdate>(oCommandModelFromRepo);
+            i_oPatchDoc.ApplyTo(oCommandToPatch, ModelState);
+
+            if(!TryValidateModel(oCommandToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            m_oMapper.Map(oCommandToPatch, oCommandModelFromRepo);
+            m_oRepository.UpdateCommand(oCommandModelFromRepo);
+            m_oRepository.SaveChanges();
+
+            return NoContent();   
         }
     }
 }
