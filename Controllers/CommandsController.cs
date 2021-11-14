@@ -100,5 +100,21 @@ namespace Commander.Controllers
 
             return NoContent();   
         }
+
+        // DELETE api/commands/{i_oId}
+        [HttpDelete("{i_oId}")]
+        public ActionResult DeleteCommand(int i_oId)
+        {
+            var oCommandModelFromRepo = m_oRepository.GetCommandById(i_oId);
+            if(oCommandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            m_oRepository.DeleteCommand(oCommandModelFromRepo);
+            m_oRepository.SaveChanges();
+
+            return NoContent();
+        }
     }
 }
