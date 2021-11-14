@@ -10,6 +10,11 @@ namespace Commander.Data
             throw new System.NotImplementedException();
         }
 
+        public void UpdateCommand(Command i_oCmd)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IEnumerable<Command> GetAllCommands()
         {
             var commands = new List<Command>()

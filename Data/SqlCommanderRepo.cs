@@ -19,6 +19,11 @@ namespace Commander.Data
             m_oContext.Commands.Add(i_oCmd);
         }
 
+        public void UpdateCommand(Command i_oCmd)
+        {
+            // ...Nothing...
+        }
+
         public SqlCommanderRepo(CommanderContext i_oContext)
         {
             m_oContext = i_oContext;

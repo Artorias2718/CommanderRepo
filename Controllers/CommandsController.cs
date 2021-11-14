@@ -28,11 +28,11 @@ namespace Commander.Controllers
             return Ok(m_oMapper.Map<IEnumerable<CommandRead>>(oCommandItems));
         }
 
-        // GET api/commands/{id}
-        [HttpGet("{id}", Name="GetCommandById")]
-        public ActionResult<CommandRead> GetCommandById(int id)
+        // GET api/commands/{i_oId}
+        [HttpGet("{i_oId}", Name="GetCommandById")]
+        public ActionResult<CommandRead> GetCommandById(int i_oId)
         {
-            var oCommandItem = m_oRepository.GetCommandById(id);
+            var oCommandItem = m_oRepository.GetCommandById(i_oId);
             return oCommandItem != null
             ? Ok(m_oMapper.Map<CommandRead>(oCommandItem))
             : NotFound();
@@ -50,6 +50,29 @@ namespace Commander.Controllers
 
             return CreatedAtRoute(nameof(GetCommandById), new { Id = oCommandRead.Id }, oCommandRead);
             //return Ok(oCommandRead);
+        }
+
+        // PUT api/commands/{id}
+        [HttpPut("{i_oId}")]
+        public ActionResult UpdateCommand(int i_oId, CommandUpdate i_oCommandUpdate)
+        {
+            var oCommandModelFromRepo = m_oRepository.GetCommandById(i_oId);
+            if(oCommandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            m_oMapper.Map(i_oCommandUpdate, oCommandModelFromRepo);
+
+            // The EF takes care of this for us, so
+            // UpdateCommand is technically useless,
+            // but let's leave it here in case
+            // we ever have any custom Update code
+            // that needs to run in a CommanderRepo implementation.
+            m_oRepository.UpdateCommand(oCommandModelFromRepo);
+            m_oRepository.SaveChanges();
+
+            return NoContent();
         }
     }
 }
